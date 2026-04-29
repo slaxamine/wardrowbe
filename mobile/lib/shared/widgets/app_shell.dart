@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:wardrowbe_app/core/theme/app_theme.dart';
 
 /// Main app shell with bottom navigation bar.
 class AppShell extends StatelessWidget {
