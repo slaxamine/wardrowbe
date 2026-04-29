@@ -1,0 +1,91 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        # User Service
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/auth/**, /api/v1/families/**
+          filters:
+            - StripPrefix=0
+
+        # Wardrobe Service
+        - id: wardrobe-service
+          uri: lb://wardrobe-service
+          predicates:
+            - Path=/api/v1/items/**, /api/v1/images/**
+          filters:
+            - StripPrefix=0
+
+        # Outfit Service
+        - id: outfit-service
+          uri: lb://outfit-service
+          predicates:
+            - Path=/api/v1/outfits/**, /api/v1/pairings/**
+          filters:
+            - StripPrefix=0
+
+        # Weather Service
+        - id: weather-service
+          uri: lb://weather-service
+          predicates:
+            - Path=/api/v1/weather/**
+          filters:
+            - StripPrefix=0
+
+        # Notification Service
+        - id: notification-service
+          uri: lb://notification-service
+          predicates:
+            - Path=/api/v1/notifications/**
+          filters:
+            - StripPrefix=0
+
+        # AI Service (Python FastAPI)
+        - id: ai-service
+          uri: http://ai-service:8004
+          predicates:
+            - Path=/api/v1/ai/**
+          filters:
+            - StripPrefix=0
+
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins:
+              - "http://localhost:3000"
+              - "http://localhost:8081"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+              - OPTIONS
+            allowedHeaders:
+              - Authorization
+              - Content-Type
+            allowCredentials: true
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+    fetch-registry: true
+    register-with-eureka: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
